@@ -38,11 +38,7 @@ if options[:propability] == nil
   puts 'Enter Propability (0..1): '
   options[:propability] = gets.chomp.to_f
 end
-p [options[:region], options[:count], options[:propability]]
 unless (options[:propability] >= 0 && options[:propability] <= 1) || ['US', 'RU', 'BY'].include?(options[:region]) || [0..100000].include?(options[:count])
-  p "p" unless options[:propability] >= 0 && options[:propability] <= 1
-  p 'r' unless ['US', 'RU', 'BY'].include?(options[:region])
-  p 'c' unless [*(0..100000)].include?(options[:count])
   raise TypeError, 'Some of the entered data were incorrect'
 end
 
