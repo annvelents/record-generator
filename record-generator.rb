@@ -1,20 +1,32 @@
 require 'optparse'
-Dir[File.expand_path('../lib/Person.rb', __FILE__), File.expand_path('../lib/MistakeGenerator.rb', __FILE__)].each {|f| require f}
-#require_relative 'lib/Person'
+Dir[File.expand_path('../lib/Person.rb', __FILE__), File.expand_path('../lib/MistakeGenerator.rb', __FILE__), File.expand_path('../lib/GeneratorFactory.rb', __FILE__)].each {|f| require f}
 
 options = {:region => nil, :count => nil, :propability => nil}
 
 parser = OptionParser.new do|opts|
   opts.on('-r', '--region ', 'Region') do |region|
-    options[:region] = region;
+    if ['US', 'RU', 'BY'].include?(region)
+      options[:region] = region
+    else 
+      raise ArgumentError, 'Wrong Region'
+    end
   end
 
   opts.on('-c', '--count ', 'Count') do |count|
-    options[:count] = count.to_i;
+    if [*(0..100000)].include?(count.to_i)
+      options[:count] = count.to_i
+    else 
+      raise ArgumentError, 'Wrong Count'
+    end
   end
 
   opts.on('-p', '--propability ', 'Propability') do |propability|
-    options[:propability] = propability.to_f
+    propability = propability.to_f
+    if propability >= 0 && propability <= 1
+      options[:propability] = propability
+    else
+      raise ArgumentError, 'Wrong Propability'
+    end
   end
 
   opts.on('-h', '--help', 'Displays Help') do
@@ -24,28 +36,13 @@ parser = OptionParser.new do|opts|
 end
 parser.parse!
 
-if options[:region] == nil
-  puts 'Enter Region (US, RU, BY): '
-  options[:region] = gets.chomp
-end
 
-if options[:count] == nil
-  puts 'Enter Count (0..100 000): '
-   options[:count] = gets.chomp.to_i
-end
-
-if options[:propability] == nil
-  puts 'Enter Propability (0..1): '
-  options[:propability] = gets.chomp.to_f
-end
-unless (options[:propability] >= 0 && options[:propability] <= 1) || ['US', 'RU', 'BY'].include?(options[:region]) || [0..100000].include?(options[:count])
-  raise TypeError, 'Some of the entered data were incorrect'
-end
-
-
-result = Array.new(options[:count]) { Person.new(options[:region]) }
+result = Array.new(options[:count]) { Person.new() }
+GeneratorPersons = GeneratorFactory.new()
 result.each do |pers|
-  pers.generate
+  GeneratorPersons.factory(pers, options[:region])
 end
-result = MistakeGenerator.mistakes(1, result)
-result.each {|e| puts e.to_s}
+MakeMistake = MistakeGenerator.new()
+result = MakeMistake.mistakes(1, result)
+
+result.each {|e| puts e}
