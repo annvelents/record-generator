@@ -1,5 +1,7 @@
 require 'optparse'
-Dir[File.expand_path('../lib/Person.rb', __FILE__), File.expand_path('../lib/MistakeGenerator.rb', __FILE__), File.expand_path('../lib/GeneratorFactory.rb', __FILE__)].each {|f| require f}
+Dir[File.expand_path('../lib/Person.rb', __FILE__), 
+  File.expand_path('../lib/MistakeGenerator.rb', __FILE__), 
+  File.expand_path('../lib/GeneratorFactory.rb', __FILE__)].each {|f| require f}
 
 options = {:region => nil, :count => nil, :propability => nil}
 
@@ -37,10 +39,12 @@ end
 parser.parse!
 
 
+generator = GeneratorFactory.factory(options[:region])
 result = Array.new(options[:count]) { Person.new() }
-GeneratorPersons = GeneratorFactory.new()
+
+#generator_persons = 
 result.each do |pers|
-  GeneratorPersons.factory(pers, options[:region])
+  generator.generate_data_for(pers)
 end
 MakeMistake = MistakeGenerator.new()
 result = MakeMistake.mistakes(1, result)

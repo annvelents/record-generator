@@ -1,8 +1,9 @@
 require 'rubygems'
 require 'faker'
 require 'carmen'
+Dir[File.expand_path('./BaseGenerator.rb', __FILE__)].each {|f| require f}
 
-module UsGenerator
+class UsGenerator < BaseGenerator
 	def self.create_name
 		Faker::Name.name
 	end
